@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: podsofkon
+  namespace: podsofkon
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: podsofkon
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: podsofkon
+    spec:
+      volumes:
+        - name: creds
+          secret:
+            secretName: order-db-tns-admin-secret
+            defaultMode: 420
+      containers:
+        - name: podsofkon
+          image: us-ashburn-1.ocir.io/<your_repos_location>/podsofkon:0.1
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          env:
+            - name: LOG_LEVEL
+              value: DEBUG
+            - name: server_port
+              value: '8080'
+            - name: spring.datasource.username
+              value: admin
+            - name: spring.datasource.url
+              value: jdbc:oracle:thin:@gd740878851_tp?TNS_ADMIN=/podsofkon/creds
+            - name: spring.datasource.password
+              value: <yourpassword>
+          resources: {}
+          volumeMounts:
+            - name: creds
+              mountPath: /podsofkon/creds
+          imagePullPolicy: Always
+      restartPolicy: Always
+      imagePullSecrets:
+        - name: regcred
+      schedulerName: default-scheduler

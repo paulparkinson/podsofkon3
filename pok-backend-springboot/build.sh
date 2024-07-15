@@ -11,7 +11,7 @@ DOCKER_REGISTRY=us-ashburn-1.ocir.io/oradbclouducm/podsofkon
 export IMAGE=${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_VERSION}
 export IMAGE_VERSION=$IMAGE_VERSION
 
-mvn clean
+mvn clean package
 
 #docker buildx build --platform linux/amd64,linux/arm64 -t $IMAGE .
 podman build -t=$IMAGE .

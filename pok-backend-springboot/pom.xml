@@ -15,7 +15,7 @@
 	<description>Pods Of Kon</description>
 
 	<properties>
-		<java.version>11</java.version>
+		<java.version>17</java.version>
 		<spring-cloud.version>2021.0.5</spring-cloud.version>
 		<oracle.jdbc.version>21.7.0.0</oracle.jdbc.version>
 		<spring.vault.version>3.1.1</spring.vault.version>
@@ -187,8 +187,8 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
-					<source>11</source>
-					<target>11</target>
+					<source>17</source>
+					<target>17</target>
 				</configuration>
 			</plugin>
 		</plugins>

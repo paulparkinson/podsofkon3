@@ -21,17 +21,12 @@ public class PodsOfKonController {
     private static Logger log = LoggerFactory.getLogger(podsofkon.PodsOfKonController.class);
 
 
-    private static Connection conn;
-    private static PreparedStatement preparedStatementIncrementScore;
-    private static PreparedStatement preparedStatementUpdateScore;
-    private static PreparedStatement preparedStatementClearScore;
-    private static PreparedStatement insertFinalScore;
-
     @Autowired
     DataSource datasource;
 
 
-    String query = "SELECT * FROM ORDERUSER.QANDA";
+    String questionsquery = "SELECT * FROM ORDERUSER.QANDA";
+    String setPlayerNamesSQL = "INSERT INTO playerinfo (firstname, lastname, email, company, jobrole, tshirtsize, comments, playername) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
     @GetMapping("/test")
     public String test() throws Exception {
@@ -44,13 +39,14 @@ public class PodsOfKonController {
         BonusRound quiz = new BonusRound();
         List<Question> questionsList = new ArrayList<>();
         try (Connection connection = datasource.getConnection();
-             Statement statement = connection.createStatement()) {
-            ResultSet resultSet = statement.executeQuery(query);
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(questionsquery)) {
+
             while (resultSet.next()) {
                 Question question = new Question();
-                String question1 = resultSet.getString("question");
-                question.setText(question1);
-//                            System.out.println("PodsOfKonController.questions question" + question1);
+                String questionText = resultSet.getString("question");
+                question.setText(questionText);
+
                 List<Answer> answers = new ArrayList<>();
                 for (int i = 1; i <= 5; i++) {
                     String answerText = resultSet.getString("answer" + i);
@@ -62,9 +58,11 @@ public class PodsOfKonController {
                 question.setAnswers(answers);
                 questionsList.add(question);
             }
+
             quiz.setQuestions(questionsList);
+
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println("PodsOfKonController.questions SQLException:" + e);
         }
         ObjectMapper objectMapper = new ObjectMapper();
         try {
@@ -80,13 +78,17 @@ public class PodsOfKonController {
     @GetMapping("/createTables")
     public String createTables() throws Exception {
         log.debug("createTables for datasource:" + datasource + "...");
-        initConn();
+
+        try (Connection conn = datasource.getConnection()) {
         conn.createStatement().execute("create table currentgame( playername varchar(256), score number(10)  )");
         conn.createStatement().execute("insert into currentgame values ( 'player1', 0  )");
         conn.createStatement().execute("insert into currentgame values ( 'player2', 0  )");
         conn.createStatement().execute("create table scores( playername varchar(256), score number(10) )");
         String returnString = "createTables success";
         return returnString;
+        } catch (Exception e) {
+            return "Exception occurred during create tables:" + e;
+        }
     }
 
     @GetMapping("/createDeployment")
@@ -107,7 +109,10 @@ public class PodsOfKonController {
     public String movescores(@RequestParam("player1Name") String player1Name, @RequestParam("player1Score") int player1Score,
                              @RequestParam("player2Name") String player2Name, @RequestParam("player2Score") int player2Score) throws Exception {
         System.out.println("movescores for datasource:" + datasource + "...");
-        initConn();
+
+        try (Connection conn = datasource.getConnection();
+             PreparedStatement insertFinalScore = conn.prepareStatement(
+                     "insert into scores values ( ?, ? )")) {
         insertFinalScore.setString(1, player1Name);
         insertFinalScore.setInt(2, player1Score);
         insertFinalScore.execute();
@@ -136,6 +141,10 @@ public class PodsOfKonController {
         deleteDeployment("player2", "dotnet-deployment");
         createDeployment("player2", "springboot");
         return "movescores success";
+        } catch (SQLException ex) {
+            System.out.println("movescores exception:" + ex);
+            return  "movescores failed";
+        }
     }
 
     String player1Name = "steelix";
@@ -149,14 +158,14 @@ public class PodsOfKonController {
     }
 
 
-    @GetMapping("/incrementScore")
-    public String incrementScore(@RequestParam("playerName") String playerName,
-                                 @RequestParam("amount") int amount) throws Exception {
-        log.debug("incrementScore for playerName:" + playerName + "...");
-        log.debug("incrementScore for datasource:" + datasource + "...");
-        updateScore(playerName, amount);
-        return "incrementScore success";
-    }
+//    @GetMapping("/incrementScore")
+//    public String incrementScore(@RequestParam("playerName") String playerName,
+//                                 @RequestParam("amount") int amount) throws Exception {
+//        log.debug("incrementScore for playerName:" + playerName + "...");
+//        log.debug("incrementScore for datasource:" + datasource + "...");
+//        updateScore(playerName, amount);
+//        return "incrementScore success";
+//    }
 
     @GetMapping("/updateScores")
     public String updateScores(@RequestParam("player1Score") int player1Score,
@@ -168,14 +177,15 @@ public class PodsOfKonController {
         return "updateScores success";
     }
 
-    private void updateScore(String playerName, int amount) throws SQLException {
-        initConn();
-        try {
+    private void updateScore(String playerName, int amount)  {
+        try (Connection conn = datasource.getConnection();
+             PreparedStatement preparedStatementUpdateScore = conn.prepareStatement(
+                "UPDATE currentgame SET score=? WHERE playername=?")) {
             preparedStatementUpdateScore.setInt(1, amount);
             preparedStatementUpdateScore.setString(2, playerName);
             preparedStatementUpdateScore.execute();
         } catch (Exception ex) {
-            ex.printStackTrace();
+            System.out.println("PodsOfKonController.updateScore ex:" + ex);
         }
     }
 
@@ -190,8 +200,10 @@ public class PodsOfKonController {
 //        }
 //    }
     private void clearScore(String playerName) throws SQLException {
-        initConn();
-        try {
+
+        try (Connection conn = datasource.getConnection();
+             PreparedStatement preparedStatementClearScore = conn.prepareStatement(
+                     "UPDATE currentgame SET score=0 WHERE playername=?")) {
             preparedStatementClearScore.setString(1, playerName);
             preparedStatementClearScore.execute();
         } catch (Exception ex) {
@@ -199,20 +211,6 @@ public class PodsOfKonController {
         }
     }
 
-    private void initConn() throws SQLException {
-        if (conn == null || conn.isClosed() || conn.isValid(1) ||
-                preparedStatementIncrementScore ==null) {
-            conn = datasource.getConnection();
-            preparedStatementIncrementScore = conn.prepareStatement(
-                    "UPDATE currentgame SET score=score+? WHERE playername=?");
-            preparedStatementUpdateScore = conn.prepareStatement(
-                    "UPDATE currentgame SET score=? WHERE playername=?");
-            preparedStatementClearScore = conn.prepareStatement(
-                    "UPDATE currentgame SET score=0 WHERE playername=?");
-            insertFinalScore = conn.prepareStatement(
-                    "insert into scores values ( ?, ? )");
-        }
-    }
 
     //        @GetMapping("/deleteDeployment")
 //        public String delete(@RequestParam("appName") String appName, String deploymentName) throws Exception {
@@ -247,11 +245,22 @@ public class PodsOfKonController {
             this.player2Name = player2Name;
             playerName = player2Name;
         }
-        this.initConn();
-        conn.createStatement().execute(
-                "insert into playerinfo values " +
-                        "('" + firstName + "', '" + lastName + "', '" + email + "', '" + company + "', " +
-                        "'" + jobrole + "', '" + tshirtsize + "', '" + comments + "', '" + playerName + "' )");
+        try (Connection conn = datasource.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(setPlayerNamesSQL)) {
+
+            pstmt.setString(1, firstName);
+            pstmt.setString(2, lastName);
+            pstmt.setString(3, email);
+            pstmt.setString(4, company);
+            pstmt.setString(5, jobrole);
+            pstmt.setString(6, tshirtsize);
+            pstmt.setString(7, comments);
+            pstmt.setString(8, playerName);
+
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("PodsOfKonController.setPlayerNamesAndIds SQLException:" + e);
+        }
         return "<html>Successfully recorded player info.  Thank You!<br><br></html>";
     }
 

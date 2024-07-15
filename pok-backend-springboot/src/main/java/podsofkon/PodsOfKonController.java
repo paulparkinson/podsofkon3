@@ -138,38 +138,16 @@ public class PodsOfKonController {
         return "movescores success";
     }
 
-
     String player1Name = "steelix";
     String player2Name = "umbreon";
-    @GetMapping("/setPlayerNamesAndIds")
-    public void setPlayerNamesAndIds(HttpServletRequest request, HttpServletResponse response,
-                                     @RequestParam(name = "isRegistered", required = false) boolean isRegistered,
-                                     @RequestParam("player1Name") String player1Name,
-                                     @RequestParam("player2Name") String player2Name) throws Exception {
-        if (!player1Name.trim().equals("") ) this.player1Name = player1Name;
-        if (!player2Name.trim().equals("") ) this.player2Name = player2Name;
-        System.out.println("PodsOfKonController.setPlayerNamesAndIds isRegistered:" + isRegistered);
-//            return "success";
-        response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
-        if (isRegistered) {
-            response.setHeader("Location", "/podsofkon/nameupdatedsuccess");
-        } else {
-            response.setHeader("Location",
-                    "https://wkrfs4xeqva1jcu-indadw.adb.us-phoenix-1.oraclecloudapps.com/" +
-                            "ords/r/demouserws/contactinformation/crm2det");
-        }
-    }
+
 
     @GetMapping("/getPlayerName")
     public String getPlayerNamesAndIds(@RequestParam("playerName") String playerName) throws Exception {
         return playerName.equals("player1")?player1Name:player2Name;
 
     }
-    @GetMapping("/nameupdatedsuccess")
-    public String nameupdatedsuccess() throws Exception {
-        return "Successfully updated player name.  Thanks!";
 
-    }
 
     @GetMapping("/incrementScore")
     public String incrementScore(@RequestParam("playerName") String playerName,
@@ -184,8 +162,8 @@ public class PodsOfKonController {
     public String updateScores(@RequestParam("player1Score") int player1Score,
                                @RequestParam("player2Score") int player2Score) throws Exception {
         log.debug("updateScores player1Score:" + player1Score + "...");
-        log.debug("updateScores player2Score:" + player2Score + "...");
         updateScore("player1", player1Score);
+        log.debug("updateScores player2Score:" + player2Score + "...");
         updateScore("player2", player2Score);
         return "updateScores success";
     }
@@ -201,16 +179,16 @@ public class PodsOfKonController {
         }
     }
 
-    private void increment(String playerName, int amount) throws SQLException {
-        initConn();
-        try {
-            preparedStatementIncrementScore.setInt(1, amount);
-            preparedStatementIncrementScore.setString(2, playerName);
-            preparedStatementIncrementScore.execute();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
+//    private void increment(String playerName, int amount) throws SQLException {
+//        initConn();
+//        try {
+//            preparedStatementIncrementScore.setInt(1, amount);
+//            preparedStatementIncrementScore.setString(2, playerName);
+//            preparedStatementIncrementScore.execute();
+//        } catch (Exception ex) {
+//            ex.printStackTrace();
+//        }
+//    }
     private void clearScore(String playerName) throws SQLException {
         initConn();
         try {
@@ -250,25 +228,38 @@ public class PodsOfKonController {
 
 
     @PostMapping({"/setPlayerNamesAndIds"})
-    public String setPlayerNamesAndIds(HttpServletRequest request, HttpServletResponse response, @RequestParam(name = "isRegistered",required = false) boolean isRegistered, @RequestParam("player1Name") String player1Name, @RequestParam("player2Name") String player2Name, @RequestParam("firstName") String firstName, @RequestParam("lastName") String lastName, @RequestParam("email") String email, @RequestParam("company") String company, @RequestParam("jobrole") String jobrole, @RequestParam("tshirtsize") String tshirtsize, @RequestParam("comments") String comments) throws Exception {
+    public String setPlayerNamesAndIds(HttpServletRequest request, HttpServletResponse response,
+                                       @RequestParam("player1Name") String player1Name,
+                                       @RequestParam("player2Name") String player2Name,
+                                       @RequestParam("firstName") String firstName,
+                                       @RequestParam("lastName") String lastName,
+                                       @RequestParam("email") String email,
+                                       @RequestParam("company") String company,
+                                       @RequestParam("jobrole") String jobrole,
+                                       @RequestParam("tshirtsize") String tshirtsize,
+                                       @RequestParam("comments") String comments) throws Exception {
+        String playerName = "unknown";
         if (!player1Name.trim().equals("")) {
             this.player1Name = player1Name;
+            playerName = player1Name;
         }
-
         if (!player2Name.trim().equals("")) {
             this.player2Name = player2Name;
+            playerName = player2Name;
         }
-
         this.initConn();
-        conn.createStatement().execute("insert into playerinfo values ('" + firstName + "', '" + lastName + "', '" + email + "', '" + company + "', '" + jobrole + "', '" + tshirtsize + "', '" + comments + "' )");
-        return "<html>Successfully updated player name.  Thanks!<br><br></html>";
+        conn.createStatement().execute(
+                "insert into playerinfo values " +
+                        "('" + firstName + "', '" + lastName + "', '" + email + "', '" + company + "', " +
+                        "'" + jobrole + "', '" + tshirtsize + "', '" + comments + "', '" + playerName + "' )");
+        return "<html>Successfully recorded player info.  Thank You!<br><br></html>";
     }
 
     @GetMapping({"/form"})
     public String form() {
         return "                <html><head><meta charset=\"UTF-8\">" +
                 "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"></head>" +
-                "<form a method=\"post\" action=\"/podsofkon/setPlayerNamesAndIds\" >  Enter Either Player 1 or Player 2 Name...<br>        <div>            <label for=\"player1Name\">Player 1 Name:</label>            " +
+                "<form a method=\"post\" action=\"/podsofkon/setPlayerNamesAndIds\" >  Enter EITHER Player 1 or Player 2 Name (NOT BOTH)...<br>        <div>            <label for=\"player1Name\">Player 1 Name:</label>            " +
                 "<input type=\"text\" id=\"player1Name\" name=\"player1Name\" autocomplete=\"player1Name\">        " +
                 "</div>        " +
                 "<div>            <label for=\"player2Name\">Player 2 Name:</label>            <input type=\"text\" id=\"player2Name\" name=\"player2Name\" autocomplete=\"player2Name\">        </div>        <div>            " +

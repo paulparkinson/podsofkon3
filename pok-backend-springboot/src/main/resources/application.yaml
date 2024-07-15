@@ -1,54 +1,25 @@
 spring:
   application:
-    name: configcrud
-#  thymeleaf:
-#    prefix: /static/
-#    prefix: classpath:/static/
+    name: podsofkon
   servlet:
     multipart:
       max-request-size: 256MB
       max-file-size: 256MB
   datasource:
-    url: replacewithenv
-    username: replacewithenv
-    password: replacewithenv
+    url: "jdbc:oracle:thin:@gd740878851_tp?TNS_ADMIN=/podsofkon/creds"
+    username: asdf
+    password: asdf
     driver-class-name: oracle.jdbc.OracleDriver
     type: oracle.ucp.jdbc.PoolDataSource
     oracleucp:
       connection-factory-class-name: oracle.jdbc.pool.OracleDataSource
-      sql-for-validate-connection: select * from dual
+      sql-for-validate-connection: select 1 from dual
       connection-pool-name: cserverConnectionPool
       initial-pool-size: 15
       min-pool-size: 10
       max-pool-size: 30
-  jpa:
-    hibernate:
-      ddl-auto: update
-#      ddl-auto: validate
-#      ddl-auto: create
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.Oracle12cDialect
-        format_sql: 'true'
-    show-sql: false
-#    generate-ddl: true
-#  mail:
-#    host: smtp.gmail.com
-#    port: 587
-#    username: username
-#    password: password
-#    properties:
-#      mail:
-#        smtp:
-#          auth: true
-#          starttls:
-#            enable: false
-#    attachment:
-#      invoice: path_to_file
-  #  # Templates directory inside main/resources or absolute filesystem path
-    templates:
-      path: mail-templates
-  ##spring.mail.templates.path=/path/to/templates
+  templates:
+    path: mail-templates
 
 management:
   endpoint:
@@ -57,21 +28,21 @@ management:
   endpoints:
     web:
       exposure:
-        include: "health,metrics,env,beans,configprops,scheduledtasks.loggers,mappings,prometheus"
-#server:
-#  port: 8080
+        include: "health,metrics,env,beans,configprops,scheduledtasks,loggers,mappings,prometheus"
+
 server:
-   tomcat:
-      connectionUploadTimeout: '600000'
-      connection-timeout: '600000'
-      max-swallow-size: 256MB
-      connectionTimeout: '600000'
-      max-http-form-post-size: 256MB
+  tomcat:
+    connection-upload-timeout: 600000
+    connection-timeout: 600000
+    max-swallow-size: 256MB
+    max-http-form-post-size: 256MB
+
 logging:
   level:
     oracle:
       spring:
         service: DEBUG
+
 org:
   slf4j:
     simpleLogger:

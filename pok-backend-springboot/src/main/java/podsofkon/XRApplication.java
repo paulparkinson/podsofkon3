@@ -13,8 +13,6 @@ import org.springframework.context.annotation.Bean;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.core.JmsTemplate;
-import podsofkon.upload.storage.StorageProperties;
-import podsofkon.upload.storage.StorageService;
 
 import javax.sql.DataSource;
 
@@ -24,7 +22,6 @@ import javax.sql.DataSource;
 //		HibernateJpaAutoConfiguration.class
 //})
 @SpringBootApplication
-@EnableConfigurationProperties(StorageProperties.class)
 public class XRApplication {
 
 	public static final String REGION = "us-phoenix-1";
@@ -38,16 +35,9 @@ public class XRApplication {
 	public static void main(String[] args) {
 //		SpringApplication.run(XRApplication.class, args);
 		ConfigurableApplicationContext context = SpringApplication.run(XRApplication.class, args);
-		jmsTemplate = context.getBean(JmsTemplate.class);
+//		jmsTemplate = context.getBean(JmsTemplate.class);
 	}
 
-	@Bean
-	CommandLineRunner init(StorageService storageService) {
-		return (args) -> {
-			storageService.deleteAll();
-			storageService.init();
-		};
-	}
 
 	@Configuration
 	public class JacksonConfiguration {

@@ -1,0 +1,34 @@
+# Stage 1: Build stage
+FROM debian:bullseye-slim AS build
+
+# Set the working directory
+WORKDIR /app
+
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+    openjdk-17-jdk \
+    maven \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy the project files
+COPY . .
+
+# Build the application
+RUN mvn -B clean package
+
+# Stage 2: Runtime stage
+FROM debian:bullseye-slim
+
+# Install only the JRE for runtime
+RUN apt-get update && apt-get install -y \
+    openjdk-17-jre-headless \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set the working directory
+WORKDIR /app
+
+# Copy the built application from the build stage
+COPY --from=build /app/target/podsofkon-0.0.1-SNAPSHOT.jar .
+
+# Run the application
+CMD ["java", "-jar", "podsofkon-0.0.1-SNAPSHOT.jar"]

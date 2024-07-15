@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.1</version>
+		<version>3.3.1</version>
 		<relativePath/>
 	</parent>
 	<groupId>podsofkon</groupId>
@@ -15,16 +15,11 @@
 	<description>Pods Of Kon</description>
 
 	<properties>
+		<java.version>11</java.version>
 		<spring-cloud.version>2021.0.5</spring-cloud.version>
 		<oracle.jdbc.version>21.7.0.0</oracle.jdbc.version>
-		<spring.boot.version>2.7.6</spring.boot.version>
 		<spring.vault.version>3.1.1</spring.vault.version>
 		<oci.sdk.version>3.2.0</oci.sdk.version>
-
-
-		<jib-maven-plugin.version>3.3.1</jib-maven-plugin.version>
-		<liquibase.version>4.17.2</liquibase.version>
-		<docker.registry>${env.DOCKER_REGISTRY}</docker.registry>
 	</properties>
 
 	<dependencies>
@@ -38,37 +33,18 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-mail</artifactId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>javax.validation</groupId>
-			<artifactId>validation-api</artifactId>
-			<version>2.0.1.Final</version>
-		</dependency>
-		<dependency>
-			<groupId>org.freemarker</groupId>
-			<artifactId>freemarker</artifactId>
-			<version>2.3.32</version>
-		</dependency>
-<!--the following not necessary maybe...-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-devtools</artifactId>
-			<scope>runtime</scope>
-			<optional>true</optional>
+			<artifactId>spring-boot-starter-jdbc</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>io.kubernetes</groupId>
 			<artifactId>client-java</artifactId>
 			<version>19.0.0</version>
-<!--			<version>16.0.2</version>-->
 		</dependency>
-<!--		<dependency>-->
-<!--			<groupId>io.kubernetes</groupId>-->
-<!--			<artifactId>client-java</artifactId>-->
-<!--			<version>16.0.2</version>-->
-<!--		</dependency>-->
-
 		<dependency>
 			<groupId>com.oracle.oci.sdk</groupId>
 			<artifactId>oci-java-sdk-common</artifactId>
@@ -119,70 +95,10 @@
 			<artifactId>oci-java-sdk-objectstorage</artifactId>
 			<version>${oci.sdk.version}</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-simple</artifactId>
 			<version>2.0.6</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-			<version>3.12.0</version>
-		</dependency>
-		<dependency>
-			<groupId>com.google.code.google-collections</groupId>
-			<artifactId>google-collect</artifactId>
-			<version>snapshot-20080530</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-codec</groupId>
-			<artifactId>commons-codec</artifactId>
-			<version>1.15</version>
-		</dependency>
-
-
-
-
-
-		<dependency>
-			<groupId>com.github.docker-java</groupId>
-			<artifactId>docker-java</artifactId>
-			<version>3.0.14</version>
-		</dependency>
-		<dependency>
-			<groupId>com.github.docker-java</groupId>
-			<artifactId>docker-java-api</artifactId>
-			<version>3.2.11</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-web</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-config</artifactId>
-		</dependency>
-<!--		<dependency>-->
-<!--			<groupId>org.springframework.cloud</groupId>-->
-<!--			<artifactId>spring-cloud-starter-vault-config</artifactId>-->
-<!--			<version>${spring.vault.version}</version>-->
-<!--		</dependency>-->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-actuator</artifactId>
-			<version>${spring.boot.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-jpa</artifactId>
-			<version>${spring.boot.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-			<version>${spring.boot.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.oracle.database.jdbc</groupId>
@@ -210,33 +126,15 @@
 			<version>${oracle.jdbc.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<version>${spring.boot.version}</version>
-			<scope>test</scope>
-		</dependency>
-
-
-
-		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-jms</artifactId>
 			<version>4.3.3.RELEASE</version>
-<!--			<version>6.0.4</version> jakarta -->
 		</dependency>
 		<dependency>
 			<groupId>com.oracle.database.messaging</groupId>
 			<artifactId>aqapi</artifactId>
 			<version>21.3.0.0</version>
-<!--			<version>19.3.0.0</version>-->
 		</dependency>
-		<dependency>
-			<groupId>javax.transaction</groupId>
-			<artifactId>javax.transaction-api</artifactId>
-			<version>1.2</version>
-			<scope>runtime</scope>
-		</dependency>
-
 		<dependency>
 			<groupId>javax.xml.bind</groupId>
 			<artifactId>jaxb-api</artifactId>
@@ -247,27 +145,12 @@
 			<artifactId>jackson-databind</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.eclipse.microprofile.lra</groupId>
-			<artifactId>microprofile-lra-api</artifactId>
-			<version>1.0</version>
-		</dependency>
-
-
-		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 		</dependency>
-        <dependency>
-            <groupId>io.projectreactor</groupId>
-            <artifactId>reactor-core</artifactId>
-            <version>3.4.22</version>
-        </dependency>
-
 		<dependency>
 			<groupId>com.theokanning.openai-gpt3-java</groupId>
 			<artifactId>service</artifactId>
-<!--			<artifactId>api</artifactId>-->
-<!--			<artifactId>client</artifactId>-->
 			<version>0.12.0</version>
 		</dependency>
 		<dependency>
@@ -281,6 +164,7 @@
 			<version>3.0.0.Beta2</version>
 		</dependency>
 	</dependencies>
+
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -293,39 +177,20 @@
 		</dependencies>
 	</dependencyManagement>
 
-
 	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin><plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-compiler-plugin</artifactId><configuration><source>8</source><target>8</target></configuration></plugin>
-
+			</plugin>
 			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin><plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-compiler-plugin</artifactId><configuration><source>8</source><target>8</target></configuration></plugin>
-<!--            <plugin>-->
-<!--                <groupId>com.google.cloud.tools</groupId>-->
-<!--                <artifactId>jib-maven-plugin</artifactId>-->
-<!--                <version>${jib-maven-plugin.version}</version>-->
-<!--                <executions>-->
-<!--                    <execution>-->
-<!--                        <phase>package</phase>-->
-<!--                        <goals>-->
-<!--                            <goal>build</goal>-->
-<!--                        </goals>-->
-<!--                    </execution>-->
-<!--                </executions>-->
-<!--                <configuration>-->
-<!--                    <containerizingMode>packaged</containerizingMode>-->
-<!--                    <to>-->
-<!--                        <image>${docker.registry}/${project.artifactId}</image>-->
-<!--                        <tags><tag>${project.version}</tag></tags>-->
-<!--                    </to>-->
-<!--                </configuration>-->
-<!--            </plugin>-->
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>11</source>
+					<target>11</target>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
-
 </project>

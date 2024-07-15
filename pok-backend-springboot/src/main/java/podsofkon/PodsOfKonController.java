@@ -3,14 +3,13 @@ package podsofkon;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import podsofkon.k8s.*;
-import podsofkon.messaging.OracleAQConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.*;
@@ -31,14 +30,13 @@ import java.util.*;
         @Autowired
         DataSource datasource;
 
-        @Autowired
-        public PodsOfKonController(StorageService storageService) {
-            this.storageService = storageService;
-        }
-
-
 
         String query = "SELECT * FROM ORDERUSER.QANDA";
+
+        @GetMapping("/test")
+        public String test() throws Exception {
+            return "test successful";
+        }
 
         @GetMapping("/questions")
         public String questions() throws Exception {
@@ -231,7 +229,8 @@ import java.util.*;
         }
 
         private void initConn() throws SQLException {
-            if (conn == null || preparedStatementIncrementScore ==null) {
+            if (conn == null || conn.isClosed() || conn.isValid(1) ||
+                    preparedStatementIncrementScore ==null) {
                 conn = datasource.getConnection();
                 preparedStatementIncrementScore = conn.prepareStatement(
                         "UPDATE currentgame SET score=score+? WHERE playername=?");

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.*;
@@ -25,6 +26,8 @@ public class PodsOfKonController {
     DataSource datasource;
 
 
+    String player1Name = "steelix";
+    String player2Name = "umbreon";
     String questionsquery = "SELECT * FROM ORDERUSER.QANDA";
     String setPlayerNamesSQL = "INSERT INTO playerinfo (firstname, lastname, email, company, jobrole, tshirtsize, comments, playername) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
@@ -69,7 +72,7 @@ public class PodsOfKonController {
         try {
             String jsonString = objectMapper.writeValueAsString(quiz);
             System.out.println(jsonString);
-            return  jsonString;
+            return jsonString;
         } catch (Exception e) {
             e.printStackTrace();
             return "question query failed e:" + e;
@@ -81,12 +84,12 @@ public class PodsOfKonController {
         log.debug("createTables for datasource:" + datasource + "...");
 
         try (Connection conn = datasource.getConnection()) {
-        conn.createStatement().execute("create table currentgame( playername varchar(256), score number(10)  )");
-        conn.createStatement().execute("insert into currentgame values ( 'player1', 0  )");
-        conn.createStatement().execute("insert into currentgame values ( 'player2', 0  )");
-        conn.createStatement().execute("create table scores( playername varchar(256), score number(10) )");
-        String returnString = "createTables success";
-        return returnString;
+            conn.createStatement().execute("create table currentgame( playername varchar(256), score number(10)  )");
+            conn.createStatement().execute("insert into currentgame values ( 'player1', 0  )");
+            conn.createStatement().execute("insert into currentgame values ( 'player2', 0  )");
+            conn.createStatement().execute("create table scores( playername varchar(256), score number(10) )");
+            String returnString = "createTables success";
+            return returnString;
         } catch (Exception e) {
             return "Exception occurred during create tables:" + e;
         }
@@ -94,8 +97,8 @@ public class PodsOfKonController {
 
     @GetMapping("/createDeployment")
     public String createDeployment(@RequestParam("appName") String appName, @RequestParam("serviceName") String serviceName) {
-        log.debug("create deployment and appName  = " + appName );
-        log.debug("create deployment and service  = " + serviceName );
+        log.debug("create deployment and appName  = " + appName);
+        log.debug("create deployment and service  = " + serviceName);
         try {
             new ApplyDeployment().createDeployment(appName, serviceName);
         } catch (Exception e) {
@@ -105,71 +108,54 @@ public class PodsOfKonController {
     }
 
 
-
     @GetMapping("/movescores")
     public String movescores(@RequestParam("player1Name") String player1Name, @RequestParam("player1Score") int player1Score,
                              @RequestParam("player2Name") String player2Name, @RequestParam("player2Score") int player2Score) throws Exception {
-        System.out.println("movescores for datasource:" + datasource + "...");
         try (Connection conn = datasource.getConnection();
              PreparedStatement insertFinalScore = conn.prepareStatement(
                      "INSERT INTO scores (playername, score) VALUES (?, ?)")) {
-
-            // Insert score for player1
+            //insert scores
             insertFinalScore.setString(1, player1Name);
             insertFinalScore.setInt(2, player1Score);
             insertFinalScore.executeUpdate();
-
-            // Insert score for player2
             insertFinalScore.setString(1, player2Name);
             insertFinalScore.setInt(2, player2Score);
             insertFinalScore.executeUpdate();
-        //clear the current game...
-        clearScore("player1");
-        clearScore("player2");
-        System.out.println("deleteDeployments for player1...");
-        createDeployment("player1", "database");
-        deleteDeployment("player1", "javascript-deployment");
-        createDeployment("player1", "graalvm");
-        deleteDeployment("player1", "rust-deployment");
-        deleteDeployment("player1", "go-deployment");
-        deleteDeployment("player1", "python-deployment");
-        deleteDeployment("player1", "dotnet-deployment");
-        createDeployment("player1", "springboot");
-        System.out.println("deleteDeployments for player2...");
-        createDeployment("player2", "database");
-        deleteDeployment("player2", "javascript-deployment");
-        createDeployment("player2", "graalvm");
-        deleteDeployment("player2", "rust-deployment");
-        deleteDeployment("player2", "go-deployment");
-        deleteDeployment("player2", "python-deployment");
-        deleteDeployment("player2", "dotnet-deployment");
-        createDeployment("player2", "springboot");
-        return "movescores success";
+            //clear the current game...
+            clearScore("player1");
+            clearScore("player2");
+            System.out.println("deleteDeployments for player1...");
+            createDeployment("player1", "database");
+            deleteDeployment("player1", "javascript-deployment");
+            createDeployment("player1", "graalvm");
+            deleteDeployment("player1", "rust-deployment");
+            deleteDeployment("player1", "go-deployment");
+            deleteDeployment("player1", "python-deployment");
+            deleteDeployment("player1", "dotnet-deployment");
+            createDeployment("player1", "springboot");
+            System.out.println("deleteDeployments for player2...");
+            createDeployment("player2", "database");
+            deleteDeployment("player2", "javascript-deployment");
+            createDeployment("player2", "graalvm");
+            deleteDeployment("player2", "rust-deployment");
+            deleteDeployment("player2", "go-deployment");
+            deleteDeployment("player2", "python-deployment");
+            deleteDeployment("player2", "dotnet-deployment");
+            createDeployment("player2", "springboot");
+            return "movescores success";
         } catch (SQLException ex) {
-            System.out.println("movescores exception:" + ex);
-            return  "movescores failed";
+            System.out.println("movescores SQLException:" + ex);
+            return "movescores failed";
         }
     }
-
-    String player1Name = "steelix";
-    String player2Name = "umbreon";
 
 
     @GetMapping("/getPlayerName")
     public String getPlayerNamesAndIds(@RequestParam("playerName") String playerName) throws Exception {
-        return playerName.equals("player1")?player1Name:player2Name;
+        return playerName.equals("player1") ? player1Name : player2Name;
 
     }
 
-
-//    @GetMapping("/incrementScore")
-//    public String incrementScore(@RequestParam("playerName") String playerName,
-//                                 @RequestParam("amount") int amount) throws Exception {
-//        log.debug("incrementScore for playerName:" + playerName + "...");
-//        log.debug("incrementScore for datasource:" + datasource + "...");
-//        updateScore(playerName, amount);
-//        return "incrementScore success";
-//    }
 
     @GetMapping("/updateScores")
     public String updateScores(@RequestParam("player1Score") int player1Score,
@@ -181,10 +167,10 @@ public class PodsOfKonController {
         return "updateScores success";
     }
 
-    private void updateScore(String playerName, int amount)  {
+    private void updateScore(String playerName, int amount) {
         try (Connection conn = datasource.getConnection();
              PreparedStatement preparedStatementUpdateScore = conn.prepareStatement(
-                "UPDATE currentgame SET score=? WHERE playername=?")) {
+                     "UPDATE currentgame SET score=? WHERE playername=?")) {
             preparedStatementUpdateScore.setInt(1, amount);
             preparedStatementUpdateScore.setString(2, playerName);
             preparedStatementUpdateScore.execute();
@@ -193,16 +179,6 @@ public class PodsOfKonController {
         }
     }
 
-//    private void increment(String playerName, int amount) throws SQLException {
-//        initConn();
-//        try {
-//            preparedStatementIncrementScore.setInt(1, amount);
-//            preparedStatementIncrementScore.setString(2, playerName);
-//            preparedStatementIncrementScore.execute();
-//        } catch (Exception ex) {
-//            ex.printStackTrace();
-//        }
-//    }
     private void clearScore(String playerName) throws SQLException {
 
         try (Connection conn = datasource.getConnection();
@@ -211,20 +187,7 @@ public class PodsOfKonController {
             preparedStatementClearScore.setString(1, playerName);
             preparedStatementClearScore.execute();
         } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-
-
-    //        @GetMapping("/deleteDeployment")
-//        public String delete(@RequestParam("appName") String appName, String deploymentName) throws Exception {
-    @GetMapping("/deleteDeployment")
-    public String deleteDeployment(@RequestParam("appName") String appName, @RequestParam("serviceName") String serviceName) {
-        System.out.println("deleteDeployment appName = " + appName + ", serviceName = " + serviceName);
-        try {
-            return new DeleteDeployment().deleteDeployment(appName, serviceName);
-        } catch (Exception e) {
-            return "Exception occurred during delete operation:" + e.getMessage();          \
+            System.out.println("PodsOfKonController.clearScore ex:" + ex);
         }
     }
 
@@ -289,6 +252,17 @@ public class PodsOfKonController {
                 "<input type=\"jobrole\" id=\"jobrole\" name=\"jobrole\" autocomplete=\"jobrole\">        </div>        <div>           " +
                 " <label for=\"tshirtsize\">T-Shirt Size:</label>            <input type=\"tshirtsize\" id=\"tshirtsize\" name=\"tshirtsize\" autocomplete=\"tshirtsize\">        </div>        <div>            <label for=\"comments\">Comments:</label>            <input type=\"comments\" id=\"comments\" name=\"comments\" autocomplete=\"comments\">        </div>        <div>          " +
                 "  <input type=\"submit\" value=\"Submit\">        </div>                </form></html>";
+    }
+
+
+    @GetMapping("/deleteDeployment")
+    public String deleteDeployment(@RequestParam("appName") String appName, @RequestParam("serviceName") String serviceName) {
+        System.out.println("deleteDeployment appName = " + appName + ", serviceName = " + serviceName);
+        try {
+            return new DeleteDeployment().deleteDeployment(appName, serviceName);
+        } catch (Exception e) {
+            return "Exception occurred during delete operation:" + e.getMessage();
+        }
     }
 }
 

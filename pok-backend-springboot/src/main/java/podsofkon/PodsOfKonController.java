@@ -35,6 +35,7 @@ public class PodsOfKonController {
 
     @GetMapping("/questions")
     public String questions() throws Exception {
+        System.out.println("PodsOfKonController.questions...");
         log.debug("questions datasource:" + datasource + "...");
         BonusRound quiz = new BonusRound();
         List<Question> questionsList = new ArrayList<>();
@@ -109,16 +110,19 @@ public class PodsOfKonController {
     public String movescores(@RequestParam("player1Name") String player1Name, @RequestParam("player1Score") int player1Score,
                              @RequestParam("player2Name") String player2Name, @RequestParam("player2Score") int player2Score) throws Exception {
         System.out.println("movescores for datasource:" + datasource + "...");
-
         try (Connection conn = datasource.getConnection();
              PreparedStatement insertFinalScore = conn.prepareStatement(
-                     "insert into scores values ( ?, ? )")) {
-        insertFinalScore.setString(1, player1Name);
-        insertFinalScore.setInt(2, player1Score);
-        insertFinalScore.execute();
-        insertFinalScore.setString(1, player2Name);
-        insertFinalScore.setInt(2, player2Score);
-        insertFinalScore.execute();
+                     "INSERT INTO scores (playername, score) VALUES (?, ?)")) {
+
+            // Insert score for player1
+            insertFinalScore.setString(1, player1Name);
+            insertFinalScore.setInt(2, player1Score);
+            insertFinalScore.executeUpdate();
+
+            // Insert score for player2
+            insertFinalScore.setString(1, player2Name);
+            insertFinalScore.setInt(2, player2Score);
+            insertFinalScore.executeUpdate();
         //clear the current game...
         clearScore("player1");
         clearScore("player2");
@@ -220,7 +224,7 @@ public class PodsOfKonController {
         try {
             return new DeleteDeployment().deleteDeployment(appName, serviceName);
         } catch (Exception e) {
-            return "Exception occurred during delete operation:" + e.getMessage();
+            return "Exception occurred during delete operation:" + e.getMessage();          \
         }
     }
 

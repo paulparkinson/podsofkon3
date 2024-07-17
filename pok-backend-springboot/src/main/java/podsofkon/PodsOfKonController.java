@@ -34,6 +34,7 @@ public class PodsOfKonController {
                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
     @GetMapping("/test")
+    @ResponseBody
     public String test() throws Exception {
         return "test successful";
     }
@@ -91,6 +92,7 @@ public class PodsOfKonController {
 
 
     @GetMapping("/questions")
+    @ResponseBody
     public String questions() throws Exception {
         System.out.println("PodsOfKonController.questions...");
   //      log.debug("questions datasource:" + datasource + "...");
@@ -134,6 +136,7 @@ public class PodsOfKonController {
     }
 
     @GetMapping("/createTables")
+    @ResponseBody
     public String createTables() throws Exception {
         log.debug("createTables for datasource:" + datasource + "...");
 
@@ -150,6 +153,7 @@ public class PodsOfKonController {
     }
 
     @GetMapping("/createDeployment")
+    @ResponseBody
     public String createDeployment(@RequestParam("appName") String appName, @RequestParam("serviceName") String serviceName) {
         log.debug("create deployment and appName  = " + appName);
         log.debug("create deployment and service  = " + serviceName);
@@ -162,7 +166,19 @@ public class PodsOfKonController {
     }
 
 
+    @GetMapping("/deleteDeployment")
+    @ResponseBody
+    public String deleteDeployment(@RequestParam("appName") String appName, @RequestParam("serviceName") String serviceName) {
+        System.out.println("deleteDeployment appName = " + appName + ", serviceName = " + serviceName);
+        try {
+            return new DeleteDeployment().deleteDeployment(appName, serviceName);
+        } catch (Exception e) {
+            return "Exception occurred during delete operation:" + e.getMessage();
+        }
+    }
+
     @GetMapping("/movescores")
+    @ResponseBody
     public String movescores(@RequestParam("player1Name") String player1Name, @RequestParam("player1Score") int player1Score,
                              @RequestParam("player2Name") String player2Name, @RequestParam("player2Score") int player2Score) throws Exception {
         try (Connection conn = datasource.getConnection();
@@ -204,12 +220,14 @@ public class PodsOfKonController {
     }
 
     @GetMapping("/getPlayerName")
+    @ResponseBody
     public String getPlayerNamesAndIds(@RequestParam("playerName") String playerName) throws Exception {
         return playerName.equals("player1") ? player1Name : player2Name;
 
     }
 
     @GetMapping("/updateScores")
+    @ResponseBody
     public String updateScores(@RequestParam("player1Score") int player1Score,
                                @RequestParam("player2Score") int player2Score) throws Exception {
         log.debug("updateScores player1Score:" + player1Score + "...");
@@ -240,16 +258,6 @@ public class PodsOfKonController {
             preparedStatementClearScore.execute();
         } catch (Exception ex) {
             System.out.println("PodsOfKonController.clearScore ex:" + ex);
-        }
-    }
-
-    @GetMapping("/deleteDeployment")
-    public String deleteDeployment(@RequestParam("appName") String appName, @RequestParam("serviceName") String serviceName) {
-        System.out.println("deleteDeployment appName = " + appName + ", serviceName = " + serviceName);
-        try {
-            return new DeleteDeployment().deleteDeployment(appName, serviceName);
-        } catch (Exception e) {
-            return "Exception occurred during delete operation:" + e.getMessage();
         }
     }
 }

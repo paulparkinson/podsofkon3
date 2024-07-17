@@ -22,6 +22,8 @@ spec:
       containers:
         - name: podsofkon
           image: us-ashburn-1.ocir.io/<your_repos_location>/podsofkon:0.1
+#          image: us-ashburn-1.ocir.io/oradbclouducm/podsofkon/podsofkon:0.2
+#          image: us-ashburn-1.ocir.io/oradbclouducm/gd74087885/xr-admin:0.1
           ports:
             - name: http
               containerPort: 8080

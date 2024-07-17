@@ -86,7 +86,7 @@ public class PodsOfKonController {
         } catch (SQLException e) {
             System.out.println("PodsOfKonController.setPlayerNamesAndIds SQLException:" + e);
         }
-        return "<html>Successfully recorded player info.  Thank You!<br><br></html>";
+        return "successful";
     }
 
 

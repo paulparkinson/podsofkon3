@@ -10,8 +10,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+//import jakarta.servlet.http.HttpServletRequest;
+//import jakarta.servlet.http.HttpServletResponse;
 
 import javax.sql.DataSource;
 import java.sql.*;
@@ -50,28 +50,49 @@ public class PodsOfKonController {
         return "playerinfoform";
     }
 
-    @GetMapping({"/form0"})
-    public String form0() {
-        return "                <html><head><meta charset=\"UTF-8\">" +
-                "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"></head>" +
-                "<form a method=\"post\" action=\"/podsofkon/setPlayerNamesAndIds\" >  Enter EITHER Player 1 or Player 2 Name (NOT BOTH)...<br>        <div>            <label for=\"player1Name\">Player 1 Name:</label>            " +
-                "<input type=\"text\" id=\"player1Name\" name=\"player1Name\" autocomplete=\"player1Name\">        " +
-                "</div>        " +
-                "<div>            <label for=\"player2Name\">Player 2 Name:</label>            <input type=\"text\" id=\"player2Name\" name=\"player2Name\" autocomplete=\"player2Name\">        </div>        <div>            " +
-                "<label for=\"firstName\">First Name:</label>            " +
-                "<input type=\"text\" id=\"firstName\" name=\"firstName\" autocomplete=\"given-name\">        " +
-                "</div>        " +
-                "<div>            <label for=\"lastName\">Last Name:</label>            " +
-                "<input type=\"text\" id=\"lastName\" name=\"lastName\" autocomplete=\"family-name\">        " +
-                "</div>        <div>            <label for=\"email\">Email:</label>            " +
-                "<input type=\"email\" id=\"email\" name=\"email\" autocomplete=\"email\">        </div>        " +
-                "<div>            <label for=\"company\">Company:</label>            " +
-                "<input type=\"company\" id=\"company\" name=\"company\" autocomplete=\"company\">        " +
-                "</div>        <div>            <label for=\"jobrole\">Job Role:</label>            " +
-                "<input type=\"jobrole\" id=\"jobrole\" name=\"jobrole\" autocomplete=\"jobrole\">        </div>        <div>           " +
-                " <label for=\"tshirtsize\">T-Shirt Size:</label>            <input type=\"tshirtsize\" id=\"tshirtsize\" name=\"tshirtsize\" autocomplete=\"tshirtsize\">        </div>        <div>            <label for=\"comments\">Comments:</label>            <input type=\"comments\" id=\"comments\" name=\"comments\" autocomplete=\"comments\">        </div>        <div>          " +
-                "  <input type=\"submit\" value=\"Submit\">        </div>                </form></html>";
+    @PostMapping({"/setPlayerNamesAndIds"})
+    public String setPlayerNamesAndIds(
+            @RequestParam(value = "player1Name", required = false) String player1Name,
+            @RequestParam(value = "player2Name", required = false) String player2Name,
+            @RequestParam(value = "firstName") String firstName,
+            @RequestParam(value = "lastName") String lastName,
+            @RequestParam(value = "email") String email,
+            @RequestParam(value = "company") String company,
+            @RequestParam(value = "jobrole") String jobrole,
+            @RequestParam(value = "tshirtsize") String tshirtsize,
+            @RequestParam(value = "comments") String comments,
+            Model model) {
+        if(!player1Name.trim().equals("") && !player2Name.trim().equals("")) {
+            return "<html>Please enter only Player 1 OR Player 2 name (not both).<br><br>" +
+                    "Please return to previous screen to re submit form.  Thank you.</html>";
+        }
+        String playerName = "unknown";
+        if (!player1Name.trim().equals("")) {
+            this.player1Name = player1Name;
+            playerName = player1Name;
+        }
+        if (!player2Name.trim().equals("")) {
+            this.player2Name = player2Name;
+            playerName = player2Name;
+        }
+        System.out.println("PodsOfKonController.setPlayerNamesAndIds, saving playerName:" + playerName);
+        try (Connection conn = datasource.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(setPlayerNamesSQL)) {
+            pstmt.setString(1, firstName);
+            pstmt.setString(2, lastName);
+            pstmt.setString(3, email);
+            pstmt.setString(4, company);
+            pstmt.setString(5, jobrole);
+            pstmt.setString(6, tshirtsize);
+            pstmt.setString(7, comments);
+            pstmt.setString(8, playerName);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("PodsOfKonController.setPlayerNamesAndIds SQLException:" + e);
+        }
+        return "<html>Successfully recorded player info.  Thank You!<br><br></html>";
     }
+
 
     @GetMapping("/questions")
     public String questions() throws Exception {
@@ -225,49 +246,6 @@ public class PodsOfKonController {
             System.out.println("PodsOfKonController.clearScore ex:" + ex);
         }
     }
-
-    @PostMapping({"/setPlayerNamesAndIds"})
-    public String setPlayerNamesAndIds(HttpServletRequest request, HttpServletResponse response,
-                                       @RequestParam("player1Name") String player1Name,
-                                       @RequestParam("player2Name") String player2Name,
-                                       @RequestParam("firstName") String firstName,
-                                       @RequestParam("lastName") String lastName,
-                                       @RequestParam("email") String email,
-                                       @RequestParam("company") String company,
-                                       @RequestParam("jobrole") String jobrole,
-                                       @RequestParam("tshirtsize") String tshirtsize,
-                                       @RequestParam("comments") String comments) throws Exception {
-        if(!player1Name.trim().equals("") && !player2Name.trim().equals("")) {
-            return "<html>Please enter only Player 1 OR Player 2 name (not both).<br><br>" +
-                    "Please return to previous screen to re submit form.  Thank you.</html>";
-        }
-        String playerName = "unknown";
-        if (!player1Name.trim().equals("")) {
-            this.player1Name = player1Name;
-            playerName = player1Name;
-        }
-        if (!player2Name.trim().equals("")) {
-            this.player2Name = player2Name;
-            playerName = player2Name;
-        }
-        System.out.println("PodsOfKonController.setPlayerNamesAndIds, saving playerName:" + playerName);
-        try (Connection conn = datasource.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(setPlayerNamesSQL)) {
-            pstmt.setString(1, firstName);
-            pstmt.setString(2, lastName);
-            pstmt.setString(3, email);
-            pstmt.setString(4, company);
-            pstmt.setString(5, jobrole);
-            pstmt.setString(6, tshirtsize);
-            pstmt.setString(7, comments);
-            pstmt.setString(8, playerName);
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            System.out.println("PodsOfKonController.setPlayerNamesAndIds SQLException:" + e);
-        }
-        return "<html>Successfully recorded player info.  Thank You!<br><br></html>";
-    }
-
 
     @GetMapping("/deleteDeployment")
     public String deleteDeployment(@RequestParam("appName") String appName, @RequestParam("serviceName") String serviceName) {

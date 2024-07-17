@@ -2,6 +2,7 @@ package podsofkon;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import podsofkon.k8s.*;
 import org.slf4j.Logger;
@@ -16,7 +17,7 @@ import javax.sql.DataSource;
 import java.sql.*;
 import java.util.*;
 
-@RestController
+@Controller
 @RequestMapping("/podsofkon")
 public class PodsOfKonController {
 
@@ -35,6 +36,41 @@ public class PodsOfKonController {
     @GetMapping("/test")
     public String test() throws Exception {
         return "test successful";
+    }
+
+
+    @GetMapping({"/form"})
+    public String form(Model model) {
+        return "player1or2";
+    }
+
+    @GetMapping({"/formplayerinfo"})
+    public String formplayerinfo(Model model, @RequestParam("player") String player) {
+        model.addAttribute("player", player);
+        return "playerinfoform";
+    }
+
+    @GetMapping({"/form0"})
+    public String form0() {
+        return "                <html><head><meta charset=\"UTF-8\">" +
+                "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"></head>" +
+                "<form a method=\"post\" action=\"/podsofkon/setPlayerNamesAndIds\" >  Enter EITHER Player 1 or Player 2 Name (NOT BOTH)...<br>        <div>            <label for=\"player1Name\">Player 1 Name:</label>            " +
+                "<input type=\"text\" id=\"player1Name\" name=\"player1Name\" autocomplete=\"player1Name\">        " +
+                "</div>        " +
+                "<div>            <label for=\"player2Name\">Player 2 Name:</label>            <input type=\"text\" id=\"player2Name\" name=\"player2Name\" autocomplete=\"player2Name\">        </div>        <div>            " +
+                "<label for=\"firstName\">First Name:</label>            " +
+                "<input type=\"text\" id=\"firstName\" name=\"firstName\" autocomplete=\"given-name\">        " +
+                "</div>        " +
+                "<div>            <label for=\"lastName\">Last Name:</label>            " +
+                "<input type=\"text\" id=\"lastName\" name=\"lastName\" autocomplete=\"family-name\">        " +
+                "</div>        <div>            <label for=\"email\">Email:</label>            " +
+                "<input type=\"email\" id=\"email\" name=\"email\" autocomplete=\"email\">        </div>        " +
+                "<div>            <label for=\"company\">Company:</label>            " +
+                "<input type=\"company\" id=\"company\" name=\"company\" autocomplete=\"company\">        " +
+                "</div>        <div>            <label for=\"jobrole\">Job Role:</label>            " +
+                "<input type=\"jobrole\" id=\"jobrole\" name=\"jobrole\" autocomplete=\"jobrole\">        </div>        <div>           " +
+                " <label for=\"tshirtsize\">T-Shirt Size:</label>            <input type=\"tshirtsize\" id=\"tshirtsize\" name=\"tshirtsize\" autocomplete=\"tshirtsize\">        </div>        <div>            <label for=\"comments\">Comments:</label>            <input type=\"comments\" id=\"comments\" name=\"comments\" autocomplete=\"comments\">        </div>        <div>          " +
+                "  <input type=\"submit\" value=\"Submit\">        </div>                </form></html>";
     }
 
     @GetMapping("/questions")
@@ -230,40 +266,6 @@ public class PodsOfKonController {
             System.out.println("PodsOfKonController.setPlayerNamesAndIds SQLException:" + e);
         }
         return "<html>Successfully recorded player info.  Thank You!<br><br></html>";
-    }
-
-    @GetMapping({"/form"})
-    public String form(Model model) {
-        return "player1or2";
-    }
-
-    @GetMapping({"/formplayerinfo"})
-    public String formplayerinfo(Model model, @RequestParam("player") String player) {
-        model.addAttribute("player", player);
-        return "playerinfoform";
-    }
-
-    @GetMapping({"/form0"})
-    public String form0() {
-        return "                <html><head><meta charset=\"UTF-8\">" +
-                "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"></head>" +
-                "<form a method=\"post\" action=\"/podsofkon/setPlayerNamesAndIds\" >  Enter EITHER Player 1 or Player 2 Name (NOT BOTH)...<br>        <div>            <label for=\"player1Name\">Player 1 Name:</label>            " +
-                "<input type=\"text\" id=\"player1Name\" name=\"player1Name\" autocomplete=\"player1Name\">        " +
-                "</div>        " +
-                "<div>            <label for=\"player2Name\">Player 2 Name:</label>            <input type=\"text\" id=\"player2Name\" name=\"player2Name\" autocomplete=\"player2Name\">        </div>        <div>            " +
-                "<label for=\"firstName\">First Name:</label>            " +
-                "<input type=\"text\" id=\"firstName\" name=\"firstName\" autocomplete=\"given-name\">        " +
-                "</div>        " +
-                "<div>            <label for=\"lastName\">Last Name:</label>            " +
-                "<input type=\"text\" id=\"lastName\" name=\"lastName\" autocomplete=\"family-name\">        " +
-                "</div>        <div>            <label for=\"email\">Email:</label>            " +
-                "<input type=\"email\" id=\"email\" name=\"email\" autocomplete=\"email\">        </div>        " +
-                "<div>            <label for=\"company\">Company:</label>            " +
-                "<input type=\"company\" id=\"company\" name=\"company\" autocomplete=\"company\">        " +
-                "</div>        <div>            <label for=\"jobrole\">Job Role:</label>            " +
-                "<input type=\"jobrole\" id=\"jobrole\" name=\"jobrole\" autocomplete=\"jobrole\">        </div>        <div>           " +
-                " <label for=\"tshirtsize\">T-Shirt Size:</label>            <input type=\"tshirtsize\" id=\"tshirtsize\" name=\"tshirtsize\" autocomplete=\"tshirtsize\">        </div>        <div>            <label for=\"comments\">Comments:</label>            <input type=\"comments\" id=\"comments\" name=\"comments\" autocomplete=\"comments\">        </div>        <div>          " +
-                "  <input type=\"submit\" value=\"Submit\">        </div>                </form></html>";
     }
 
 

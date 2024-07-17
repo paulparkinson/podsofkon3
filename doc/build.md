@@ -6,6 +6,13 @@
 2. No frontend build, no back backend build. Configure front and/or backend using system properties, etc.
 3. Build frontend and/or backend and configure.
 
+### Database setup
+
+There are 4 tables: CURRENTGAME, SCORES, PLAYERINFO, and QANDA
+
+When participant submits the "scan here to play" form it inserts into PLAYERINFO as well as CURRENTGAME.
+
+The QANDA table is where questions for the second/bonus round are kept.  These can be updated at anytime, even while the game is playing. 
 
 ### Backend Build
 

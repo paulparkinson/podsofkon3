@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Player Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            text-align: center;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        .form-group {
+            margin: 15px 0;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        input[type="text"],
+        input[type="email"],
+        input[type="company"],
+        input[type="jobrole"],
+        input[type="tshirtsize"],
+        input[type="comments"] {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0 20px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        input[type="submit"] {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 10px 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Which player are you?</h1>
+    <form method="post" action="http://143.47.96.92/podsofkon/setPlayerNamesAndIds">
+        Enter EITHER Player 1 or Player 2 Name (NOT BOTH)...<br>
+
+        <!-- Conditional display for Player 1 Name -->
+        <div class="form-group" th:if="${player == 'player1'}">
+            <label for="player1Name">Player 1 Name:</label>
+            <input type="text" id="player1Name" name="player1Name" autocomplete="player1Name">
+        </div>
+
+        <!-- Conditional display for Player 2 Name -->
+        <div class="form-group" th:if="${player == 'player2'}">
+            <label for="player2Name">Player 2 Name:</label>
+            <input type="text" id="player2Name" name="player2Name" autocomplete="player2Name">
+        </div>
+
+        <div class="form-group">
+            <label for="firstName">First Name:</label>
+            <input type="text" id="firstName" name="firstName" autocomplete="given-name">
+        </div>
+        <div class="form-group">
+            <label for="lastName">Last Name:</label>
+            <input type="text" id="lastName" name="lastName" autocomplete="family-name">
+        </div>
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" autocomplete="email">
+        </div>
+        <div class="form-group">
+            <label for="company">Company:</label>
+            <input type="text" id="company" name="company" autocomplete="organization">
+        </div>
+        <div class="form-group">
+            <label for="jobrole">Job Role:</label>
+            <input type="text" id="jobrole" name="jobrole" autocomplete="organization-title">
+        </div>
+        <div class="form-group">
+            <label for="tshirtsize">T-Shirt Size:</label>
+            <input type="text" id="tshirtsize" name="tshirtsize" autocomplete="tshirt-size">
+        </div>
+        <div class="form-group">
+            <label for="comments">Comments:</label>
+            <input type="text" id="comments" name="comments" autocomplete="comments">
+        </div>
+        <div class="form-group">
+            <input type="submit" value="Submit">
+        </div>
+    </form>
+</div>
+</body>
+</html>

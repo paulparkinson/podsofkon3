@@ -2,6 +2,7 @@ package podsofkon;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.ui.Model;
 import podsofkon.k8s.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -232,7 +233,18 @@ public class PodsOfKonController {
     }
 
     @GetMapping({"/form"})
-    public String form() {
+    public String form(Model model) {
+        return "player1or2";
+    }
+
+    @GetMapping({"/formplayerinfo"})
+    public String formplayerinfo(Model model, @RequestParam("player") String player) {
+        model.addAttribute("player", player);
+        return "playerinfoform";
+    }
+
+    @GetMapping({"/form0"})
+    public String form0() {
         return "                <html><head><meta charset=\"UTF-8\">" +
                 "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"></head>" +
                 "<form a method=\"post\" action=\"/podsofkon/setPlayerNamesAndIds\" >  Enter EITHER Player 1 or Player 2 Name (NOT BOTH)...<br>        <div>            <label for=\"player1Name\">Player 1 Name:</label>            " +

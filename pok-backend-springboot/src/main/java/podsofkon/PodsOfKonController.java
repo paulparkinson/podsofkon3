@@ -21,15 +21,15 @@ public class PodsOfKonController {
 
     private static Logger log = LoggerFactory.getLogger(podsofkon.PodsOfKonController.class);
 
-
     @Autowired
     DataSource datasource;
-
 
     String player1Name = "steelix";
     String player2Name = "umbreon";
     String questionsquery = "SELECT * FROM ORDERUSER.QANDA";
-    String setPlayerNamesSQL = "INSERT INTO playerinfo (firstname, lastname, email, company, jobrole, tshirtsize, comments, playername) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    String setPlayerNamesSQL =
+            "INSERT INTO playerinfo (firstname, lastname, email, company, jobrole, tshirtsize, comments, playername) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
     @GetMapping("/test")
     public String test() throws Exception {
@@ -39,7 +39,7 @@ public class PodsOfKonController {
     @GetMapping("/questions")
     public String questions() throws Exception {
         System.out.println("PodsOfKonController.questions...");
-        log.debug("questions datasource:" + datasource + "...");
+  //      log.debug("questions datasource:" + datasource + "...");
         BonusRound quiz = new BonusRound();
         List<Question> questionsList = new ArrayList<>();
         try (Connection connection = datasource.getConnection();
@@ -71,7 +71,7 @@ public class PodsOfKonController {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             String jsonString = objectMapper.writeValueAsString(quiz);
-            System.out.println(jsonString);
+            System.out.println("success length of questions:" + jsonString.length());
             return jsonString;
         } catch (Exception e) {
             e.printStackTrace();
@@ -149,13 +149,11 @@ public class PodsOfKonController {
         }
     }
 
-
     @GetMapping("/getPlayerName")
     public String getPlayerNamesAndIds(@RequestParam("playerName") String playerName) throws Exception {
         return playerName.equals("player1") ? player1Name : player2Name;
 
     }
-
 
     @GetMapping("/updateScores")
     public String updateScores(@RequestParam("player1Score") int player1Score,
@@ -191,7 +189,6 @@ public class PodsOfKonController {
         }
     }
 
-
     @PostMapping({"/setPlayerNamesAndIds"})
     public String setPlayerNamesAndIds(HttpServletRequest request, HttpServletResponse response,
                                        @RequestParam("player1Name") String player1Name,
@@ -212,9 +209,9 @@ public class PodsOfKonController {
             this.player2Name = player2Name;
             playerName = player2Name;
         }
+        System.out.println("PodsOfKonController.setPlayerNamesAndIds, saving playerName:" + playerName);
         try (Connection conn = datasource.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(setPlayerNamesSQL)) {
-
             pstmt.setString(1, firstName);
             pstmt.setString(2, lastName);
             pstmt.setString(3, email);
@@ -223,7 +220,6 @@ public class PodsOfKonController {
             pstmt.setString(6, tshirtsize);
             pstmt.setString(7, comments);
             pstmt.setString(8, playerName);
-
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println("PodsOfKonController.setPlayerNamesAndIds SQLException:" + e);

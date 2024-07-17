@@ -200,6 +200,10 @@ public class PodsOfKonController {
                                        @RequestParam("jobrole") String jobrole,
                                        @RequestParam("tshirtsize") String tshirtsize,
                                        @RequestParam("comments") String comments) throws Exception {
+        if(!player1Name.trim().equals("") && !player2Name.trim().equals("")) {
+            return "<html>Please enter only Player 1 OR Player 2 name (not both).<br><br>" +
+                    "Please return to previous screen to re submit form.  Thank you.</html>";
+        }
         String playerName = "unknown";
         if (!player1Name.trim().equals("")) {
             this.player1Name = player1Name;

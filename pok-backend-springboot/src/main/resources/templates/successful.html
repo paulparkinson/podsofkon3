@@ -20,30 +20,23 @@
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 90%;
+            width: 600px;
+            margin: 20px;
         }
-        h1 {
+        h1, h2 {
             color: #333;
-        }
-        .form-group {
             margin: 15px 0;
         }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            color: #333;
+        .image-container {
+            margin-bottom: 20px;
         }
-        input[type="text"],
-        input[type="email"],
-        input[type="company"],
-        input[type="jobrole"],
-        input[type="tshirtsize"],
-        input[type="comments"] {
-            width: 100%;
-            padding: 10px;
-            margin: 5px 0 20px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
+        .image-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            display: block;
+            margin: 0 auto;
         }
         input[type="submit"] {
             background-color: #007BFF;
@@ -62,6 +55,19 @@
         input[type="submit"]:hover {
             background-color: #0056b3;
         }
+        @media (max-width: 600px) {
+            .container {
+                width: 100%;
+                padding: 10px;
+            }
+            h1, h2 {
+                font-size: 18px;
+            }
+            input[type="submit"] {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -75,7 +81,6 @@
     <div class="image-container">
         <img src="/bit.ly_podsofkon.png" alt="Game Image">
     </div>
-
 </div>
 </body>
 </html>

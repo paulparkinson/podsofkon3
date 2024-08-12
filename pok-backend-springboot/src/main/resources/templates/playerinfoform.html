@@ -68,8 +68,6 @@
 <div class="container">
     <h1>Which player are you?</h1>
     <form method="post" action="http://143.47.96.92/podsofkon/setPlayerNamesAndIds">
-<!--        Enter EITHER Player 1 or Player 2 Name (NOT BOTH)...<br>-->
-
         <!-- Conditional display for Player 1 Name -->
         <div class="form-group" th:if="${player == 'player1'}">
             <label for="player1Name">Player 1 Name:</label>
@@ -92,7 +90,7 @@
         </div>
         <div class="form-group">
             <label for="email">Email:</label>
-            <input type="email" id="email" name="email" autocomplete="email">
+            <input type="email" id="email" name="email" autocomplete="email" required>
         </div>
         <div class="form-group">
             <label for="company">Company:</label>
